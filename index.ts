@@ -1,9 +1,11 @@
-import express from "express";
+import express, { Application } from "express";
 import dotenv from "dotenv";
-import cors from "cors";
+// import cors, { CorsOptions } from "cors";
 import databaseConnection from "./config/db.js";
+import userRoutes from "./routes/User.routes.ts";
 
-const app = new express();
+
+const app: Application = express();
 app.use(express.json());
 
 dotenv.config();
@@ -16,19 +18,21 @@ const whiteList = [
 ];
 
 const corsOptions = {
-    origin: function(origin, callback) {
+    origin: function(origin: string | undefined, callback: (arg0: Error | null, arg1: boolean | undefined) => void) {
         if(whiteList.includes(origin)) {
             // Request can access
             callback(null, true);
         } else {
             // Request don't have access
             console.log(origin);
-            callback(new Error("Error de cors"))
+            callback(new Error("Error de cors"), true)
         }
     }
 }
 
-// app.use(cors(corsOptions));
+// app.use(cors(corsOptions as CorsOptions));
+
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 4000;
 
