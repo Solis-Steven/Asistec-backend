@@ -13,25 +13,27 @@ const validateEmail = (email: string): boolean => {
 export const createUser = async(req: Request, res: Response) => {
     const { email }: {email: string} = req.body;
 
+    console.log(req.body);
+
     const existingUser = await UserModel.findOne({email});
 
     if(existingUser) {
         const error = new Error("El usuario ya existe. Por favor ingresa otro correo");
 
-        return(res.status(400).json({msg: error.message}));
+        return(res.json({msg: error.message}));
     }
 
     if(!validateEmail(email)) {
         const error = new Error("El correo debe ser de la forma '@estudiantec.cr'");
 
-        return(res.status(400).json({msg: error.message}));
+        return(res.json({msg: error.message}));
     }
 
     try {
         const user = new UserModel(req.body);
         user.save();
 
-        res.json({msg: "Usuario creado correctamente"});
+        res.json({succes: "Usuario creado correctamente"});
     } catch (error: any) {
         console.log("createUser error", error);
     }
@@ -39,14 +41,14 @@ export const createUser = async(req: Request, res: Response) => {
 
 // This function checks if the user exists
 export const userLogin = async(req: Request, res: Response) => {
-    const { email, password }: {email: string, password: string} = req.body;
+    const { email, password } = req.query as {email: string, password: string};
 
     const user = await UserModel.findOne({email});
-
+    
     if(!user) {
         const error = new Error("El usuario no existe. Por favor crea una cuenta");
-
-        return(res.status(400).json({msg: error.message}));
+        
+        return(res.json({msg: error.message}));
     }
 
     if(await user.verifyPassword(password)) {
@@ -57,6 +59,30 @@ export const userLogin = async(req: Request, res: Response) => {
     } else {
         const error = new Error("La contraseña ingresada es incorrecta");
 
-        return(res.status(403).json({msg: error.message}));
+        return(res.json({msg: error.message}));
+    }
+}
+
+// This function change the user password
+export const changePassword = async(req: Request, res: Response) => {
+    const { email, password }: {email: string, password: string} = req.body;
+
+    const user = await UserModel.findOne({email});
+
+    if(!user) {
+        const error = new Error("El usuario no existe. Por favor crea una cuenta");
+
+        return(res.json({msg: error.message}));
+    }
+
+    // It is necessary to add more validations to implement this functionality.
+
+    try {
+        user.password = password;
+        await user.save();
+
+        res.json({msg: "Contraseña modificada correctamente"});
+    } catch (error) {
+        console.log("New Password error: ", error);
     }
 }
