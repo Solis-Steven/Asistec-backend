@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 // import cors, { CorsOptions } from "cors";
 import databaseConnection from "./config/db.js";
 import userRoutes from "./routes/User.routes.ts";
+import eventRoutes from "./routes/Event.routes.ts";
 
 
 const app: Application = express();
@@ -33,6 +34,7 @@ const corsOptions = {
 // app.use(cors(corsOptions as CorsOptions));
 
 app.use("/api/users", userRoutes);
+app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT || 4000;
 
