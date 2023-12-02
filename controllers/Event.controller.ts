@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import EventSchema from "../models/Event.model.ts";
 
+// This function returns all events
 export const getEvents = async (req: Request, res: Response) => {
   try {
     const events = await EventSchema.find();
@@ -10,6 +11,7 @@ export const getEvents = async (req: Request, res: Response) => {
   }
 };
 
+// This function returns an event by id
 export const getEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -22,6 +24,7 @@ export const getEvent = async (req: Request, res: Response) => {
   }
 };
 
+// This function deletes an event by id
 export const deleteEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -34,6 +37,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
   }
 };
 
+// This function updates an event by id
 export const updateEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { eventItems } = req.body;
@@ -48,6 +52,7 @@ export const updateEvent = async (req: Request, res: Response) => {
   }
 };
 
+// This function creates a new event
 export const createEvent = async (req: Request, res: Response) => {
   const { _id, eventItems } = req.body;
 
