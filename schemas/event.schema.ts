@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Individual event item schema
-const eventItemSchema = z.object({
+const eventContentSchema = z.object({
   date: z.string({ required_error: "The date is required" }),
   description: z.string({ required_error: "The description is required" }),
   finalHour: z.string({ required_error: "The final hour is required" }),
@@ -15,19 +15,23 @@ const eventItemSchema = z.object({
   reminderText: z.string({ required_error: "The reminder text is required" }),
 });
 
+
+// This schema checks that eventItems is an object where each property (date) is an array of events
+const eventArraySchema = z.array(eventContentSchema);
+
 // Event collection schema used for creation, requires _id and eventItems fields
 export const eventSchema = z.object({
   _id: z.string({ required_error: "The ID is required" }),
   eventItems: z
-    // The record method is used to validate that eventItems is an object with eventItemSchema
-    .record(eventItemSchema, { required_error: "eventItems is undefined" })
-    // The refine method is used to validate that eventItems is an empty object or an object with eventItemSchema; otherwise, it will throw an error
+    // The record method is used to validate that eventItems can be a serie of objects (thats why called record) with a key (date) and an array of events as value (eventArraySchema)
+    .record(eventArraySchema, { required_error: "eventItems is undefined" })
+    // The refine method is used to validate that eventItems is an empty object or an object(s) with with a key (date) and an array of events as value (eventArraySchema)
     .refine(
       (value) =>
         value === undefined ||
         Object.keys(value).length === 0 ||
         Object.values(value).every(
-          (event) => eventItemSchema.safeParse(event).success
+          (event) => eventArraySchema.safeParse(event).success
         ),
       {
         message:
@@ -40,8 +44,8 @@ export const eventSchema = z.object({
 export const eventSchemaUpdate = z.object({
     // The _id field is not required because it is not going to be updated
   eventItems: z
-    // The record method is used to validate that eventItems is an object with eventItemSchema
-    .record(eventItemSchema, {
+    // The record method is used to validate that eventItems is an object with a key (date) and an array of events as value
+    .record(eventArraySchema, {
       required_error: "eventItems is required",
       invalid_type_error:
         "eventItems must be an object with the defined schema",

@@ -1,12 +1,10 @@
 import mongoose from "mongoose";
 
-
-const uri = "";
 // This function makes connection with database
 const dataBaseConnection = async () => {
     try {
         const connection = await mongoose.connect(
-            uri,
+            process.env.MONGO_URI || "",
             // {
             //     useNewUrlParser: true,
             //     useUnifiedTopology: true
