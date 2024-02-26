@@ -26,9 +26,9 @@ export const createEvent = async (req: Request, res: Response) => {
 export const getUserEvents = async (req: Request, res: Response) => {
   const { id } = req.params;
   
-  if(id == undefined) res.status(404);
+  if(id == "undefined") return;
 
-  const user = await User.findById({ _id: id });
+  const user = await User.findById({ _id: id }).select('-updatedAt -__v -createdAt');
 
   if (!user) {
     const error = new Error("El usuario no existe");
@@ -57,9 +57,8 @@ export const updateEvent = async (req: Request, res: Response) => {
   }
 
   try {
-    const eventId = req.params.id;
     const eventData = req.body;
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, eventData, { new: true });
+    const updatedEvent = await Event.findByIdAndUpdate(eventData["_id"], eventData, { new: true });
     res.json({ msg: "Evento actualizado correctamente", event: updatedEvent });
   } catch (error: any) {
     console.log("updateEvent error", error);
@@ -79,8 +78,8 @@ export const deleteEvent = async (req: Request, res: Response) => {
   }
 
   try {
-    const eventId = req.params.id;
-    await Event.findByIdAndDelete(eventId);
+    const eventId = req.params.eventId;
+    await Event.findByIdAndDelete({_id: eventId});
     res.json({ msg: "Evento eliminado correctamente" });
   } catch (error: any) {
     console.log("deleteEvent error", error);
