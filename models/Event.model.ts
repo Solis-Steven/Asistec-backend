@@ -1,15 +1,69 @@
-import mongoose from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
-// This is the schema for the events
-const eventCalendarSchema = new mongoose.Schema(
-  {
-    _id: { type: String, default: "calendarioEventos" },
-    eventItems: { type: Object, required: true, default: {} },
+interface IEvent extends Document {
+  name: string;
+  description: string;
+  initialHour: string;
+  initialHourText: string;
+  finalHour: string;
+  finalHourText: string;
+  date: string;
+  isAllDay: boolean;
+  reminder: number;
+  reminderText: string;
+  userId: string;
+}
+
+const eventSchema = new Schema<IEvent>({
+  name: {
+    type: String,
+    required: true,
+    trim: true
   },
-  { timestamps: true, versionKey: false }
-);
+  description: {
+    type: String,
+    required: true
+  },
+  initialHour: {
+    type: String,
+    required: true
+  },
+  initialHourText: {
+    type: String,
+    required: true
+  },
+  finalHour: {
+    type: String,
+    required: true
+  },
+  finalHourText: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: String,
+    required: true
+  },
+  isAllDay: {
+    type: Boolean,
+    required: true
+  },
+  reminder: {
+    type: Number,
+    required: true
+  },
+  reminderText: {
+    type: String,
+    required: true
+  },
+  userId: {
+    type: String,
+    required: true
+  }
 
-// This is the model for the events
-const EventSchema = mongoose.model("eventos", eventCalendarSchema);
+}, {
+  timestamps: true
+});
 
-export default EventSchema;
+const Event = model<IEvent>("Event", eventSchema);
+export default Event;

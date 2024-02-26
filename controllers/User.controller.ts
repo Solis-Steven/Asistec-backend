@@ -51,7 +51,7 @@ export const userLogin = async(req: Request, res: Response) => {
 
     if(await user.verifyPassword(password)) {
         res.json({
-            _id: user._id,
+            userId: user._id,
             name: user.name,
         });
     } else {

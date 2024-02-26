@@ -1,78 +1,89 @@
 import { Request, Response } from "express";
-import EventSchema from "../models/Event.model.ts";
+import Event from "../models/Event.model.ts"
+import User from "../models/User.model.ts"
 
-// This function returns all events
-export const getEvents = async (req: Request, res: Response) => {
-  try {
-    const events = await EventSchema.find();
-    res.json(events);
-  } catch (error) {
-    console.log("getEvents error", error);
-  }
-};
-
-// This function returns an event by id
-export const getEvent = async (req: Request, res: Response) => {
+export const createEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
 
+  const user = await User.findById({ _id: id });
+
+  if (!user) {
+    const error = new Error("El usuario no existe");
+
+    return (res.status(400).json({ msg: error.message }));
+  }
+
   try {
-    const event = await EventSchema.findById(id);
-    if (!event) return res.status(404).json({ msg: "Event not found" });
-    res.json(event);
-  } catch (error) {
-    console.log("getEvent error", error);
+    const eventData = req.body;
+    const event = await Event.create(eventData);
+    res.status(201).json({ msg: "Evento creado correctamente", event });
+  } catch (error: any) {
+    console.log("createEvent error", error);
+    res.status(500).json({ msg: "Error al crear el evento" });
   }
 };
 
-// This function deletes an event by id
+export const getUserEvents = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  
+  if(id == undefined) res.status(404);
+
+  const user = await User.findById({ _id: id });
+
+  if (!user) {
+    const error = new Error("El usuario no existe");
+
+    return (res.status(400).json({ msg: error.message }));
+  }
+
+  try {
+    const events = await Event.find({ userId: id });
+    res.json(events);
+  } catch (error: any) {
+    console.log("getUserEvents error", error);
+    res.status(500).json({ msg: "Error al obtener los eventos del usuario" });
+  }
+};
+
+export const updateEvent = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const user = await User.findById({ _id: id });
+
+  if (!user) {
+    const error = new Error("El usuario no existe");
+
+    return (res.status(400).json({ msg: error.message }));
+  }
+
+  try {
+    const eventId = req.params.id;
+    const eventData = req.body;
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, eventData, { new: true });
+    res.json({ msg: "Evento actualizado correctamente", event: updatedEvent });
+  } catch (error: any) {
+    console.log("updateEvent error", error);
+    res.status(500).json({ msg: "Error al actualizar el evento" });
+  }
+};
+
 export const deleteEvent = async (req: Request, res: Response) => {
   const { id } = req.params;
 
+  const user = await User.findById({ _id: id });
+
+  if (!user) {
+    const error = new Error("El usuario no existe");
+
+    return (res.status(400).json({ msg: error.message }));
+  }
+
   try {
-    const event = await EventSchema.findByIdAndDelete(id);
-    if (!event) return res.status(404).json({ msg: "Event not found" });
-    res.json(event);
-  } catch (error) {
+    const eventId = req.params.id;
+    await Event.findByIdAndDelete(eventId);
+    res.json({ msg: "Evento eliminado correctamente" });
+  } catch (error: any) {
     console.log("deleteEvent error", error);
-  }
-};
-
-// This function updates an event by id
-export const updateEvent = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { eventItems } = req.body;
-
-  try {
-    await EventSchema.findByIdAndUpdate(id, {
-      eventItems: eventItems,
-    });
-    res.send("Updating event");
-  } catch (error) {
-    console.log("updateEvent error", error);
-  }
-};
-
-// This function creates a new event
-export const createEvent = async (req: Request, res: Response) => {
-  const { _id, eventItems } = req.body;
-
-  try {
-    const existingEvent = await EventSchema.findById(_id);
-
-    if (existingEvent) {
-
-      res.status(400).send("El evento con este _id ya existe");
-      return;
-    }
-
-    const newEvent = new EventSchema({
-      _id,
-      eventItems,
-    });
-
-    await newEvent.save();
-    res.send("Creating event");
-  } catch (error) {
-    console.log("createEvent error", error);
+    res.status(500).json({ msg: "Error al eliminar el evento" });
   }
 };
