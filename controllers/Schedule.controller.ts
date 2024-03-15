@@ -1,107 +1,93 @@
 import { Request, Response } from "express";
-import Activity from "../models/Activity.model.ts"
+import Schedule from "../models/Schedule.model.ts"
 import User from "../models/User.model.ts"
 
-export const createActivity = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  const user = await User.findById({ _id: id });
-
-  if (!user) {
-    const error = new Error("El usuario no existe");
-
-    return (res.status(400).json({ msg: error.message }));
-  }
-
-  try {
-    const activityData = req.body;
-    const activity = await Activity.create(activityData);
-    res.status(201).json({ msg: "Actividad creado correctamente", activity });
-  } catch (error: any) {
-    console.log("createActivity error", error);
-    res.status(500).json({ msg: "Error al crear la Actividad" });
-  }
-};
-export const getUserActivity = async (req: Request, res: Response) => {
+export const createSchedule = async (req: Request, res: Response) => {
     const { id } = req.params;
+  
+    const user = await User.findById({ _id: id });
+  
+    if (!user) {
+      const error = new Error("El usuario no existe");
+  
+      return (res.status(400).json({ msg: error.message }));
+    }
+  
+    try {
+      const scheduleData = req.body;
+      const schedule = await Schedule.create(scheduleData);
+      res.status(201).json({ msg: "Horario creado correctamente", schedule });
+    } catch (error: any) {
+      console.log("createSchedule error", error);
+      res.status(500).json({ msg: "Error al crear el horario" });
+    }
+  };
+
+
+
+  export const getUserSchedule = async (req: Request, res: Response) => {
+      const { id } = req.params;
+      
+      if(id == "undefined") return;
     
-    if(id == "undefined") return;
-  
-    const user = await User.findById({ _id: id }).select('-updatedAt -__v -createdAt');
-  
-    if (!user) {
-      const error = new Error("El usuario no existe");
-  
-      return (res.status(400).json({ msg: error.message }));
-    }
-  
-    try {
-      const activities = await Activity.find({ userId: id });
-      res.json(activities);
-    } catch (error: any) {
-      console.log("getUserActivity error", error);
-      res.status(500).json({ msg: "Error al obtener las Actividades del usuario" });
-    }
-  };
-  
-  export const updateActivity = async (req: Request, res: Response) => {
-    const { id } = req.params;
-  
-    const user = await User.findById({ _id: id });
-  
-    if (!user) {
-      const error = new Error("El usuario no existe");
-  
-      return (res.status(400).json({ msg: error.message }));
-    }
-  
-    try {
-      const activityData = req.body;
-      const updatedActivity = await Activity.findByIdAndUpdate(activityData["_id"], activityData, { new: true });
-      res.json({ msg: "Actividad actualizada correctamente", event: updatedActivity });
-    } catch (error: any) {
-      console.log("updateEvent error", error);
-      res.status(500).json({ msg: "Error al actualizar la actividad" });
-    }
-  };
-  
-  export const deleteActivity = async (req: Request, res: Response) => {
-    const { id } = req.params;
-  
-    const user = await User.findById({ _id: id });
-  
-    if (!user) {
-      const error = new Error("El usuario no existe");
-  
-      return (res.status(400).json({ msg: error.message }));
-    }
-  
-    try {
-      const activityId = req.params.activityId;
-      await Activity.findByIdAndDelete({_id: activityId});
-      res.json({ msg: "Evento eliminado correctamente" });
-    } catch (error: any) {
-      console.log("deleteEvent error", error);
-      res.status(500).json({ msg: "Error al eliminar el evento" });
-    }
-  };
-  export const deleteActivitiesByRelationId = async (req: Request, res: Response) => {
-    const { id, idRelacion } = req.params;
-
-    const user = await User.findById({ _id: id });
-
-    if (!user) {
+      const user = await User.findById({ _id: id }).select('-updatedAt -__v -createdAt');
+    
+      if (!user) {
         const error = new Error("El usuario no existe");
-        return res.status(400).json({ msg: error.message });
-    }
+    
+        return (res.status(400).json({ msg: error.message }));
+      }
+    
+      try {
+        const schedules = await Schedule.find({ userId: id });
+        res.json(schedules);
+      } catch (error: any) {
+        console.log("getUserSchedule error", error);
+        res.status(500).json({ msg: "Error al obtener los horarios del usuario" });
+      }
+    };
+    
+    export const updateSchedule = async (req: Request, res: Response) => {
+      const { id } = req.params;
+    
+      const user = await User.findById({ _id: id });
+    
+      if (!user) {
+        const error = new Error("El usuario no existe");
+    
+        return (res.status(400).json({ msg: error.message }));
+      }
+    
+      try {
+        const scheduleData = req.body;
+        const updatedSchedule = await Schedule.findByIdAndUpdate(scheduleData["_id"], scheduleData, { new: true });
+        res.json({ msg: "Horario actualizado correctamente", event: updatedSchedule });
+      } catch (error: any) {
+        console.log("updateSchedule error", error);
+        res.status(500).json({ msg: "Error al actualizar el horario" });
+      }
+    };
+    
+    export const deleteSchedule = async (req: Request, res: Response) => {
+      const { id } = req.params;
+    
+      const user = await User.findById({ _id: id });
+    
+      if (!user) {
+        const error = new Error("El usuario no existe");
+    
+        return (res.status(400).json({ msg: error.message }));
+      }
+    
+      try {
+        const scheduleId = req.params.scheduleId;
+        await Schedule.findByIdAndDelete({_id: scheduleId});
+        res.json({ msg: "Horario eliminado correctamente" });
+      } catch (error: any) {
+        console.log("deleteSchedule error", error);
+        res.status(500).json({ msg: "Error al eliminar el horario" });
+      }
+    };
 
-    try {
-        await Activity.deleteMany({ idRelacion: idRelacion });
-        res.json({ msg: "Actividades eliminadas correctamente" });
-    } catch (error: any) {
-        console.log("deleteActivitiesByRelationId error", error);
-        res.status(500).json({ msg: "Error al eliminar las actividades" });
-    }
-};
- 
-  
+   
+    

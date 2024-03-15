@@ -1,18 +1,16 @@
 import express from "express";
 import {
-createActivity,
-getUserActivity,
-deleteActivity,
-updateActivity,
-deleteActivitiesByRelationId
+createSchedule,
+getUserSchedule,
+updateSchedule,
+deleteSchedule
 } from "../controllers/Schedule.controller.ts";
 
 
 const router = express.Router();
 //route to create a new activity
-router.post("/registerActivity/:id", createActivity);
-router.get("/getActivities/:id", getUserActivity);
-router.delete("/deleteActivity/:id/:activityId", deleteActivity);
-router.delete("/deleteActivitiesByRelationId/:id/:idRelacion", deleteActivitiesByRelationId);
-router.put("/updateActivity/:id", updateActivity);
+router.post("/registerSchedule/:id", createSchedule);
+router.get("/getSchedules/:id", getUserSchedule);
+router.delete("/deleteSchedule/:id/:scheduleId", deleteSchedule);
+router.put("/updateSchedule/:id", updateSchedule);
 export default router;

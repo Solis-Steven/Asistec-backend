@@ -1,28 +1,25 @@
 import { Document, Schema, model } from 'mongoose';
 interface IActivitySchedule extends Document {
-  idRelacion: number;
-  start: Date;
-  end: Date;
   title: string;
-  description: string;
+  startTime: Date;
+  endTime: Date;
+  location: string;
   modalityType: string;
   color: string;
-  type: string;
   day: number;
-  userId: string;
+  scheduleId: string;
+
 }
 const ActivitySchema = new Schema<IActivitySchedule>(
   {
-    idRelacion: { type: Number, required: true },
-    start: { type: Date, required: true },
-    end: { type: Date, required: true },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    location: { type: String, required: true },
     modalityType: { type: String, required: true },
     color: { type: String, required: true },
-    type: { type: String, required: true },
     day: { type: Number, required: true },
-    userId: { type: String, required: true }
+    scheduleId: { type: String, required: true }
   },
   { timestamps: true }
 
