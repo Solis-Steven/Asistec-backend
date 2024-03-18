@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 import databaseConnection from "./config/db.js";
 import userRoutes from "./routes/User.routes.ts";
 import eventRoutes from "./routes/Event.routes.ts";
-
-
+import activityRoutes from "./routes/Activity.routes.ts";
+import scheduleRoutes from "./routes/Schedule.routes.ts";
 const app: Application = express();
 app.use(express.json());
 
@@ -35,7 +35,8 @@ const corsOptions = {
 
 app.use("/api/users", userRoutes);
 app.use("/api/events", eventRoutes);
-
+app.use("/api/activity", activityRoutes);
+app.use("/api/schedule", scheduleRoutes);
 const PORT = process.env.PORT || 4000;
 
 const server = app.listen(PORT, () => {
