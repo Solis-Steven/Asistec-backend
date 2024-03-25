@@ -39,10 +39,6 @@ const userSchema = new Schema<IUser>({
         type: String,
         required: true,
         trim: true
-    },
-    career: {
-        type: String,
-        required: true,
     }
 }, {
     timestamps: true
