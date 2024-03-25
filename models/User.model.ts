@@ -8,6 +8,7 @@ interface IUser extends Document {
     major: string,
     email: string,
     password: string,
+    career:string,
     createdAt: Date,
     updatedAt: Date,
     verifyPassword(password: string): Promise<boolean>
@@ -39,6 +40,10 @@ const userSchema = new Schema<IUser>({
         required: true,
         trim: true
     },
+    career: {
+        type: String,
+        required: true,
+    }
 }, {
     timestamps: true
 });
